@@ -427,7 +427,7 @@ export default {
 
       list.forEach(item => {
         seriesAttendanceData.push((item.attendRate * 100).toFixed(2))
-        avgAttendanceData.push((this.showLifeData.attendRate * 100).toFixed(2))
+        avgAttendanceData.push((this.showLifeData.attendRate * 100).toFixed(2) || 0)
       })
       this.seriesAttendance.push({
         name: '出勤率',
