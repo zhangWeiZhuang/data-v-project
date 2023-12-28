@@ -43,6 +43,22 @@ export default {
       charts.resize()
     });
   },
+  watch: {
+    series: {
+      handler () {
+        const charts = echarts.init(this.$el)
+        charts.dispose()
+        this.initEcharts()
+      },
+      deep: true
+    },
+    xAxis: {
+      handler () {
+        this.initEcharts()
+      },
+      deep: true
+    }
+  },
   methods: {
     initEcharts () {
       const charts = echarts.init(this.$el)

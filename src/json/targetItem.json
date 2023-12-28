@@ -1,16 +1,20 @@
 {
   "list": [
     {
-      "title": "月度营业收入完成情况"
+      "title": "月度营业收入完成情况",
+      "value":"month_income"
     },
     {
-      "title": "累计营业收入完成情况"
+      "title": "累计营业收入完成情况",
+      "value":"ytd_month_income"
     },
     {
-      "title": "月度利润总额完成情况"
+      "title": "月度利润总额完成情况",
+      "value":"month_profit"
     },
     {
-      "title": "累计利润总额完成情况"
+      "title": "累计利润总额完成情况",
+      "value":"ytd_month_profit"
     }
   ]
 }

@@ -10,6 +10,9 @@ import schoolList from "../json/schoolList.json"
 require('echarts/theme/dark') // echarts主题
 export default {
   name: 'App',
+  props: {
+    orgData: []
+  },
   data () {
     return {
       width: '100%',
@@ -24,7 +27,6 @@ export default {
       // 初始化echarts实例
       this.initEcharts()
     })
-
     // 只要窗口大小发生像素变化就会触发
     window.addEventListener("resize", () => {
       const charts = echarts.init(this.$el)
@@ -43,6 +45,7 @@ export default {
           value: item.value.concat([item.shortName])//item.[item.longitude, item.latitude, item.name]
         })
       })
+      const _that = this;
       const option = {
         // 提示浮窗样式
         tooltip: {
@@ -62,15 +65,19 @@ export default {
             overflow: "break",
           },
           formatter (params) {
-            console.log(`params`, params)
-            const list = {
-              '荔湾区': ['广钢实验幼儿园', '宝学士托育中心', '广钢幼儿园'],
-              '黄埔区': ['广钢和苑幼儿园', '广钢科城山庄幼儿园', '广钢中新第一幼儿园', '广钢华标幼儿园', '广钢雍景湾幼儿园', '广钢和苑第二幼儿园'],
-              '番禺区': ['广钢倚莲半岛幼儿园', '广钢亚运城幼儿园', '广钢利凯花园幼儿园', '华工广钢幼儿园', '广钢亚运城第二幼儿园', '洛浦街广钢幼儿园', '广钢亚运城第三幼儿园', '广钢利联花园幼儿园'],
-              '白云区': ['广钢新市元邦幼儿园', '广钢南湖幼儿园', '广钢新市幼儿园', '广钢瑞晖幼儿园', '广钢竹韵幼儿园']
+            if (params.componentSubType == 'map') {
+              //根据名词模糊匹配
+              const area = _that._props.orgData.find(item => item.orgName.includes(params.name))
+              let list = [];
+              if (area) {
+                //获取区域下名称字段
+                list = _that._props.orgData.filter(item => item.parentOrgCode == area.orgCode).map(item => item.orgName)
+              }
+              return `<p style="text-align:center;line-height: 30px;height:30px;border-bottom: 1px solid #7A8698;">${params.name}（${list?.length || 0}个）</p>
+              <div style="line-height:22px;margin-top:5px"><span style="margin-left:12px;color:#fff;float:right">${list?.join('<br/>') || ''}</span></div>`;
             }
-            return `<p style="text-align:center;line-height: 30px;height:30px;border-bottom: 1px solid #7A8698;">${params.name}（${list[params.name]?.length || 0}个）</p>
-              <div style="line-height:22px;margin-top:5px"><span style="margin-left:12px;color:#fff;float:right">${list[params.name]?.join('<br/>') || ''}</span></div>`;
+            if (params.componentSubType == 'scatter')
+              return `${params.name}`
           },
           showDelay: 100
         },
@@ -80,7 +87,7 @@ export default {
         // 地图配置
         geo: {
           //当前视角的缩放比例。
-          roam: false,
+          roam: true,//地图放大缩小
           zoom: 1.22,
           projection: {
             project: (point) => [point[0] / 300 * Math.PI, - Math.log(Math.tan((Math.PI / 2 + point[1] / 300 * Math.PI) / 2))],
@@ -203,6 +210,12 @@ export default {
       // 地图注册，第一个参数的名字必须和option.geo.map一致
       echarts.registerMap("guangzhou", guangzhoucity)
 
+      charts.on('click', ({ name }) => {
+        //根据名词模糊匹配
+        const area = _that._props.orgData.find(item => item.orgName.includes(name))
+        if (area)
+          _that.$emit('mapClick', { orgCode: area.orgCode, orgLevel: area.orgLevel })
+      })
       charts.setOption(option);
 
     }
