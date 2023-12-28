@@ -1,7 +1,7 @@
 
 import request from '../../utils/request'
 
-const bestyoung='http://www.bestyoung.cn:20798'
+const bestyoung='https://www.bestyoung.cn:4532'
 const juhe='https://apis.juhe.cn'
 //模拟登录
 export function login(data) {

@@ -299,7 +299,7 @@ export default {
           this.initValueAddedData(),
           this.initValueaddeddataproj(),
           this.initBusinessData(),
-          //this.initLifeDataMonth(),
+          this.initLifeDataMonth(),
           this.initLifeDataDay()
           ]).then(() => {
             this.refresh()
@@ -315,7 +315,7 @@ export default {
       this.initValueAddedData(),
       this.initValueaddeddataproj(),
       this.initBusinessData(),
-      //this.initLifeDataMonth(),
+      this.initLifeDataMonth(),
       this.initLifeDataDay()
       ]).then(() => {
         this.refresh()
