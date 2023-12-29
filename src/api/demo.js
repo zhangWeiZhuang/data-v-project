@@ -1,8 +1,8 @@
 
 import request from '../../utils/request'
 
-const bestyoung='https://www.bestyoung.cn:4532'
-const juhe='https://apis.juhe.cn'
+const bestyoung=process.env.VUE_APP_BASE_API
+const juhe=process.env.VUE_APP_BASE_API_JUHE
 //模拟登录
 export function login(data) {
   return request({

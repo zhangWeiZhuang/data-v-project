@@ -75,11 +75,11 @@
 /* //小于等于1600px时，高度为100px，大于1600px时，高度为140px */
 @media screen and (max-width: 1600px) {
   #top-header {
-    .custom-select {
+    .custom-select-tree {
       width: 320px;
     }
 
-    .el-input__inner {
+    .el-input__inner,.vue-treeselect__single-value {
 
       font-size: 1.1111111111vw;
     }
@@ -110,16 +110,23 @@
     width: 100px;
     transition: all .35s ease-in-out;
   }
+
+  #target {
+    .target-item {
+      height: calc((100vh - 26vh) / 2);
+    }
+  }
 }
 
 
 @media screen and (min-width: 1601px) {
   #top-header {
-    .custom-select {
+    .custom-select-tree {
       width: 460px;
     }
 
-    .el-input__inner {
+    .el-input__inner,
+    .vue-treeselect__single-value {
       font-size: 1.1111111111vw;
     }
 
@@ -137,7 +144,7 @@
 
   .block-right-content-main {
     &-item {
-      height:calc((100vh - 26vh) / 4)
+      height: calc((100vh - 26vh) / 4)
     }
   }
 
@@ -145,8 +152,23 @@
     font-size: 0.611111118vw;
   }
 
-  .target-item-title {
-    width: 160px;
-    transition: all .35s ease-in-out;
+  #target {
+    .target-item {
+      height: calc((100vh - 24vh) / 2);
+    }
+  }
+}
+
+//屏幕宽度大于1920px时
+@media screen and (min-width: 1921px) {
+  #target {
+    .target-item {
+      height: calc((100vh - 21vh) / 2);
+    }
+  }
+  .block-right-content-main {
+    &-item {
+      height: calc((100vh - 22vh) / 4)
+    }
   }
 }

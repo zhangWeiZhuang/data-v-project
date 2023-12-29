@@ -30,7 +30,7 @@ export default {
       default: []
     },
     top: {
-      default: '60px'
+      default: '90px'
     },
     left: {
       default: '50px'

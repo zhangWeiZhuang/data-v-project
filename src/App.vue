@@ -7,10 +7,12 @@
           <dv-decoration-5 class="header-center-decoration" />
           <dv-decoration-8 class="header-right-decoration" :reverse="true" />
           <div class="center-title">
-            <el-select class="custom-select" v-model="curOrgModel.orgCode" @change="(val) => { areaChangeHandle(val) }">
+            <treeselect class="custom-select-tree" :clearable="false" v-model="curOrgModel.orgCode"
+              @select="(val) => { areaChangeHandle(val) }" :options="treeOrgData" />
+            <!-- <el-select class="custom-select" v-model="curOrgModel.orgCode" @change="(val) => { areaChangeHandle(val) }">
               <el-option :key="item.orgCode" v-for="item in orgData" :label="item.orgName"
                 :value="item.orgCode"></el-option>
-            </el-select>
+            </el-select> -->
           </div>
           <div class="center-subtitle">
             智慧幼教-数据大屏
@@ -19,6 +21,7 @@
             <div class="text-white">{{ dayInfo.city }}</div>
             <div class="text-white">
               <i v-if="dayInfo.weather == '晴'" class="el-icon-sunny"></i>
+              <i v-if="dayInfo.weather == '多云'" class="el-icon-cloudy"></i>
             </div>
             <div class="text-green">{{ dayInfo.weather }}</div>
             <div class="text-green">{{ dayInfo.temperature }}</div>
@@ -77,11 +80,12 @@
                     subtext="金额：元" />
                 </div>
                 <div class="block-right-content-main-item">
-                  <yysr :xAxis="xAxisSalesProfit" :series="seriesSalesProfit" left="70px" title="销售利润统计（近12月）"
+                  <yysr :xAxis="xAxisSalesProfit" :series="seriesSalesProfit" top="50px" left="70px" title="销售利润统计（近12月）"
                     subtext="金额：元" />
                 </div>
                 <div class="block-right-content-main-item">
-                  <yysr :xAxis="xAxisProject" :series="seriesProject" left="70px" title="工程类项目汇总统计（本年）" subtext="金额：元" />
+                  <yysr :xAxis="xAxisProject" :series="seriesProject" top="50px" left="70px" title="工程类项目汇总统计（本年）"
+                    subtext="金额：元" />
                 </div>
               </div>
             </dv-border-box-8>
@@ -127,9 +131,14 @@ import school from './components/school';
 import { login, org, basic, businessData, lifeDataMonth, lifeDataDay, valueAddedData, weather, valueaddeddataproj } from './api/demo'
 import _ from 'lodash';
 import dayjs from 'dayjs'
+// import the component
+import Treeselect from '@riophae/vue-treeselect'
+// import the styles
+import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 export default {
   name: 'App',
   components: {
+    Treeselect,
     Map,
     yysr,
     lineCharts,
@@ -139,6 +148,8 @@ export default {
   },
   data () {
     return {
+      // define options
+      treeOrgData: [],
       targetItem: [
         {
           title: "月度营业收入完成情况",
@@ -287,8 +298,8 @@ export default {
     if (!sessionStorage.getItem("token")) {
       //模拟登录
       login({
-        "username": "超级管理员",
-        "password": "123456",
+        "username": process.env.VUE_APP_USER_NAME,
+        "password": process.env.VUE_APP_PASSWORD,
       }).then(res => {
         if (res.code == "200") {
           //记录token
@@ -327,11 +338,31 @@ export default {
       //获取组织
       return new Promise((resolve) => {
         org().then(res => {
-          if (res.code == 200)
+          if (res.code == 200) {
             this.orgData = res.data;
+            //树形结构
+            this.treeOrgData = this.buildTree(res.data, '0');
+            console.log(`this.treeOrgData`, this.treeOrgData)
+          }
           resolve();
         })
       })
+    },
+    //构建树形结构
+    buildTree (data, pid) {
+      let tree = [];
+      data.forEach(item => {
+        if (item.parentOrgCode == pid) {
+          let child = this.buildTree(data, item.orgCode);
+          if (child.length > 0) {
+            item.children = child;
+          }
+          item.label = item.orgName;
+          item.id = item.orgCode;
+          tree.push(item);
+        }
+      });
+      return tree;
     },
     initBasic () {
       //基础信息
@@ -419,6 +450,7 @@ export default {
       //平均出勤率
       let avgAttendanceData = [];
 
+      this.seriesAttendance = [];
       //根据当前月份获取天数
       const days = new Date(this.yearMonthAttendance.substring(0, 4), this.yearMonthAttendance.substring(4, 6), 0).getDate();
       for (let i = 0; i < days; i++) {
@@ -494,11 +526,13 @@ export default {
         data: 实际支付金额_DATA
       })
     },
-    areaChangeHandle (val) {
-      //找org数据
-      const model = this.orgData.find(item => item.orgCode == val);
+    areaChangeHandle (model) {
+      // console.log(`val`, val)
+      // //找org数据
+      // const model = this.orgData.find(item => item.orgCode == val);
       if (model) {
-        this.curOrgCode = model;
+        this.curOrgCode = model.orgCode;
+        this.curOrgModel = model
         this.mapClick(model);
       }
     },
@@ -755,6 +789,7 @@ body {
     top: 15px;
     transform: translateX(-50%);
     display: flex;
+    z-index: 1996;
 
     .el-input__inner {
       border: none;
@@ -814,8 +849,6 @@ body {
   .target-item {
     width: calc((100% - 10px) / 2);
     margin-top: 5px;
-    height: 300px;
-
     position: relative;
 
     &-title {
@@ -1022,6 +1055,40 @@ body {
   .text-shiny {
     color: #ffffffde;
     text-shadow: 0px 0px 13px #00ffb2;
+  }
+}
+
+.custom-select-tree {
+  .vue-treeselect__control {
+    border: none;
+    background: transparent;
+    text-align: center;
+  }
+
+  .vue-treeselect__single-value {
+    color: #FFF;
+    font-weight: bold;
+    font-size: 1vw;
+  }
+
+  .vue-treeselect__menu,
+  .vue-treeselect__list {
+    background: #232323 !important;
+    border-color: #232323;
+  }
+
+  .vue-treeselect__list {
+    border-color: #232323;
+  }
+
+  .vue-treeselect__option--highlight {
+    background-color: #58585E !important;
+    color: #00ffb2 !important;
+  }
+
+  .vue-treeselect__option--selected {
+    background: transparent !important;
+    color: #00ffb2 !important;
   }
 }
 </style>
