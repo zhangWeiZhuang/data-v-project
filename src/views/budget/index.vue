@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="margin:8px;">
     <el-card shadow="hover" class="mb-10">
       <el-form ref="queryFormRef" :model="queryParams" :inline="true" label-width="68px">
         <el-form-item label="预算类型" prop="userName">

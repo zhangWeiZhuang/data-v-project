@@ -539,12 +539,12 @@ export default {
       //学生出勤率
       this.titleAttendance = `学生出勤统计（${this.yearMonthAttendance.substring(4, 6)}月）`
       const list = this.lifeDayData.filter(item => item.orgCode == this.curOrgCode)
-      console.log(`list`, list)
       let seriesAttendanceData = [];
       //平均出勤率
       let avgAttendanceData = [];
 
       this.seriesAttendance = [];
+      this.xAxisAttendance = [];
       //根据当前月份获取天数
       const days = new Date(this.yearMonthAttendance.substring(0, 4), this.yearMonthAttendance.substring(4, 6), 0).getDate();
       for (let i = 0; i < days; i++) {
