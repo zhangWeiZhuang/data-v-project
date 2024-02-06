@@ -169,3 +169,54 @@
   }
 }
 }
+
+
+.custom-select-tree {
+  .vue-treeselect__control {
+    border: none;
+    background: transparent;
+    text-align: center;
+  }
+
+  .vue-treeselect__single-value {
+    color: #FFF;
+    font-weight: bold;
+    font-size: 1vw;
+  }
+
+  .vue-treeselect__menu,
+  .vue-treeselect__list {
+    background: #232323 !important;
+    border-color: #232323;
+  }
+
+  .vue-treeselect__list {
+    border-color: #232323;
+  }
+
+  .vue-treeselect__option--highlight {
+    background-color: #58585E !important;
+    color: #00ffb2 !important;
+  }
+
+  .vue-treeselect__option--selected {
+    background: transparent !important;
+    color: #00ffb2 !important;
+  }
+}
+
+
+/* 全局修改 */
+::-webkit-scrollbar {
+  background-color: #f5f5f5;
+  width: 8px;
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #888;
+}
+
+// ::-webkit-scrollbar-track {
+//   background-color: #232323;
+// }

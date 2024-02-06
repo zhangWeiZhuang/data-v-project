@@ -196,6 +196,7 @@ export default {
       areaName: '',
       areaOrgCode: '',
       lifeData: [],
+      attendanceData: {},
       lifeDayData: [],
       showLifeData: {},
       valueAddedData: [],
@@ -286,7 +287,6 @@ export default {
     }
     //12月数组
     const monthAry = this.generateTwelveMonths()
-    console.log(monthAry)
     this.xAxisSalesRevenue = monthAry;
     this.xAxisSalesProfit = monthAry;
     this.monthList = monthAry
@@ -365,7 +365,6 @@ export default {
             this.orgData = res.data;
             //树形结构
             this.treeOrgData = this.buildTree(res.data, '0');
-            console.log(`this.treeOrgData`, this.treeOrgData)
           }
           resolve();
         })
@@ -427,6 +426,16 @@ export default {
         })
       })
     },
+    initLifeDataMonthAttendance () {
+      //幼儿园日常信息-月
+      return new Promise((resolve) => {
+        lifeDataMonth(this.yearMonthAttendance).then(res => {
+          if (res.code == 200)
+            this.attendanceData = res.data.find(item => item.orgCode == this.curOrgCode) || {}
+          resolve();
+        })
+      })
+    },
     initLifeDataDay () {
       //幼儿园日常信息-天
       return new Promise((resolve) => {
@@ -451,7 +460,6 @@ export default {
     },
     //刷新数据
     refresh () {
-      console.log(`刷新数据`, this.resultData)
       //基础信息
       this.basicModel = this.resultData.find(item => item.orgCode == this.curOrgCode) || {}
 
@@ -462,37 +470,14 @@ export default {
         target.series = series;
         target.xAxis = xAxis;
       });
-      if (this.lifeData.length > 0)
+      if (this.lifeData.length > 0) {
         //学生签到信息
         this.showLifeData = this.lifeData.find(item => item.orgCode == this.curOrgCode) || {}
-
-      //学生出勤率
-      this.titleAttendance = `学生出勤统计（${this.yearMonthAttendance.substring(4, 6)}月）`
-      const list = this.lifeDayData.filter(item => item.orgCode == this.curOrgCode)
-      let seriesAttendanceData = [];
-      //平均出勤率
-      let avgAttendanceData = [];
-
-      this.seriesAttendance = [];
-      //根据当前月份获取天数
-      const days = new Date(this.yearMonthAttendance.substring(0, 4), this.yearMonthAttendance.substring(4, 6), 0).getDate();
-      for (let i = 0; i < days; i++) {
-        this.xAxisAttendance.push(`${(i + 1).toString().padStart(2, 0)}`)
+        this.attendanceData = this.lifeData.find(item => item.orgCode == this.curOrgCode) || {}
       }
 
-      list.forEach(item => {
-        seriesAttendanceData.push((item.attendRate * 100).toFixed(2))
-        avgAttendanceData.push((this.showLifeData.attendRate * 100).toFixed(2) || 0)
-      })
-      this.seriesAttendance.push({
-        name: '出勤率',
-        data: seriesAttendanceData
-      })
-      this.seriesAttendance.push({
-        name: '平均出勤率',
-        data: avgAttendanceData
-      })
-
+      //出勤率
+      this.refreshAttendance();
       //获取分类并去重
       const categoryList = _.uniq(this.valueAddedData.map(item => item.prodCategory));
       //销售收入
@@ -549,6 +534,36 @@ export default {
         data: 实际支付金额_DATA
       })
     },
+    //刷新出勤率
+    refreshAttendance () {
+      //学生出勤率
+      this.titleAttendance = `学生出勤统计（${this.yearMonthAttendance.substring(4, 6)}月）`
+      const list = this.lifeDayData.filter(item => item.orgCode == this.curOrgCode)
+      console.log(`list`, list)
+      let seriesAttendanceData = [];
+      //平均出勤率
+      let avgAttendanceData = [];
+
+      this.seriesAttendance = [];
+      //根据当前月份获取天数
+      const days = new Date(this.yearMonthAttendance.substring(0, 4), this.yearMonthAttendance.substring(4, 6), 0).getDate();
+      for (let i = 0; i < days; i++) {
+        this.xAxisAttendance.push(`${(i + 1).toString().padStart(2, 0)}`)
+      }
+
+      list.forEach(item => {
+        seriesAttendanceData.push((item.attendRate * 100).toFixed(2))
+        avgAttendanceData.push((this.attendanceData.attendRate * 100).toFixed(2) || 0)
+      })
+      this.seriesAttendance.push({
+        name: '出勤率',
+        data: seriesAttendanceData
+      })
+      this.seriesAttendance.push({
+        name: '平均出勤率',
+        data: avgAttendanceData
+      })
+    },
     areaChangeHandle (model) {
       // console.log(`val`, val)
       // //找org数据
@@ -576,7 +591,13 @@ export default {
       });
     },
     yearMonthAttendanceHandle () {
-      this.initLifeDataDay();
+      Promise.all([
+        this.initLifeDataMonthAttendance(),
+        this.initLifeDataDay()
+      ]).then(() => {
+        console.log(`平均出勤率`, this.attendanceData);
+        this.refreshAttendance();
+      })
     },
     renderEcharts (datas) {
       let [series, xAxis] = [[], []];
@@ -587,7 +608,7 @@ export default {
       const 合计_DATA = target.businessData.find(item => item.orgCode == target.orgCode && item.category == '全部') || {}
       switch (target.value) {
         case "month_income": //月度营业收入完成情况
-          xAxis = ['学前教育业务', '增值服务', '合计'];
+          xAxis = ['学前教育', '增值服务', '合计'];
           series = [
             {
               name: `${target.yearMonth.substring(4, 6)}月计划`,
@@ -605,7 +626,7 @@ export default {
           ]
           break;
         case "ytd_month_income": //累计营业收入完成情况
-          xAxis = ['学前教育业务', '增值服务', '合计'];
+          xAxis = ['学前教育', '增值服务', '合计'];
           series = [
             {
               name: `累计计划`,
@@ -623,7 +644,7 @@ export default {
           ]
           break;
         case "month_profit": //月度利润总额完成情况
-          xAxis = ['学前教育业务', '增值服务', '公司本部', '合计'];
+          xAxis = ['学前教育', '增值服务', '公司本部', '合计'];
           series = [
             {
               name: `${target.yearMonth.substring(4, 6)}月计划`,
@@ -641,7 +662,7 @@ export default {
           ]
           break;
         case "ytd_month_profit": //累计利润总额完成情况
-          xAxis = ['学前教育业务', '增值服务', '公司本部', '合计'];
+          xAxis = ['学前教育', '增值服务', '公司本部', '合计'];
           series = [
             {
               name: `累计计划`,
@@ -919,80 +940,70 @@ body {
   overflow-x: hidden;
 }
 
-/* 全局修改 */
-::-webkit-scrollbar {
-  background-color: #f5f5f5;
-  width: 8px;
-  border-radius: 8px;
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: #888;
-}
-
-::-webkit-scrollbar-track {
-  background-color: #232323;
-}
 
 
 //下拉框样式
 
-.el-scrollbar {
-  background: #232323 !important;
-  border-color: #232323;
-}
-
-.el-popper[x-placement^=bottom] .popper__arrow::after,
-.el-popper[x-placement^=bottom] .popper__arrow {
-  border-bottom-color: #232323 !important;
-}
-
-.el-select-dropdown {
-  border-color: #232323 !important;
-}
-
-.el-select-dropdown__item.hover,
-.el-select-dropdown__item:hover {
-  background-color: #58585E !important;
-  color: #FFF !important;
-}
-
-// .el-select-dropdown__item {
-// color: #C8C8C9;
-// padding: 0 10px !important;
+// .el-scrollbar {
+//   background: #232323 !important;
+//   border-color: #232323;
 // }
 
-@select-border-color: #51d6a9;
+// .el-popper[x-placement^=bottom] .popper__arrow::after,
+// .el-popper[x-placement^=bottom] .popper__arrow {
+//   border-bottom-color: #232323 !important;
+// }
 
-.el-select-dropdown__item {
-  color: #fff;
-  padding: 0 10px !important;
-  height: 30px !important;
-  line-height: 30px !important;
-}
+// #target {
+//   .el-select-dropdown {
+//     border-color: #232323 !important;
+//   }
+// }
 
-.el-select:hover .el-input__inner {
-  border-color: @select-border-color !important;
-}
+// .el-select-dropdown__item.hover,
+// .el-select-dropdown__item:hover {
+//   background-color: #58585E !important;
+//   color: #FFF !important;
+// }
 
-.el-select .el-input.is-focus .el-input__inner {
-  border-color: @select-border-color !important;
-}
+// // .el-select-dropdown__item {
+// // color: #C8C8C9;
+// // padding: 0 10px !important;
+// // }
 
-.el-select .el-input__inner:focus {
-  border-color: @select-border-color !important;
-}
+// @select-border-color: #51d6a9;
 
-.el-scrollbar__wrap {
-  overflow-y: scroll !important;
-  overflow-x: hidden !important;
-}
+// .el-select-dropdown__item {
+//   color: #fff;
+//   padding: 0 10px !important;
+//   height: 30px !important;
+//   line-height: 30px !important;
+// }
 
-.el-select-dropdown__item.selected {
-  color: @select-border-color !important;
-}
+// .el-select:hover .el-input__inner {
+//   border-color: @select-border-color !important;
+// }
+
+// .el-select .el-input.is-focus .el-input__inner {
+//   border-color: @select-border-color !important;
+// }
+
+// .el-select .el-input__inner:focus {
+//   border-color: @select-border-color !important;
+// }
+
+// .el-scrollbar__wrap {
+//   overflow-y: scroll !important;
+//   overflow-x: hidden !important;
+// }
+
+// .el-select-dropdown__item.selected {
+//   color: @select-border-color !important;
+// }
 
 .popper-class {
+  width: 120px;
+
   .el-input__inner {
     padding: 0px 5px !important;
   }
@@ -1083,40 +1094,6 @@ body {
   .text-shiny {
     color: #ffffffde;
     text-shadow: 0px 0px 13px #00ffb2;
-  }
-}
-
-.custom-select-tree {
-  .vue-treeselect__control {
-    border: none;
-    background: transparent;
-    text-align: center;
-  }
-
-  .vue-treeselect__single-value {
-    color: #FFF;
-    font-weight: bold;
-    font-size: 1vw;
-  }
-
-  .vue-treeselect__menu,
-  .vue-treeselect__list {
-    background: #232323 !important;
-    border-color: #232323;
-  }
-
-  .vue-treeselect__list {
-    border-color: #232323;
-  }
-
-  .vue-treeselect__option--highlight {
-    background-color: #58585E !important;
-    color: #00ffb2 !important;
-  }
-
-  .vue-treeselect__option--selected {
-    background: transparent !important;
-    color: #00ffb2 !important;
   }
 }
 </style>
