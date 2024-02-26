@@ -1,177 +1,210 @@
-
-body{
+body {
   margin: 0 !important;
   padding: 0 !important;
 }
-#app-datav{
-#digital-flop {
-  position: relative;
-  height: 12%;
-  flex-shrink: 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: rgba(6, 30, 93, 0.5);
-  flex-wrap: wrap;
 
-  .dv-decoration-10 {
-    position: absolute;
-    width: 95%;
-    left: 2.5%;
-    height: 5px;
-    bottom: 0px;
-  }
-
-  .digital-flop-item-school {
-    width: 32% !important;
-  }
-
-  .digital-flop-item {
-    width: 23%;
+#app-datav {
+  #digital-flop {
+    position: relative;
+    // height: 12%;
+    height: 120px;
+    flex-shrink: 0;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    border-left: 3px solid #061e5d;
-    border-right: 3px solid #061e5d;
-    cursor: pointer;
+    background-color: rgba(6, 30, 93, 0.5);
+    flex-wrap: wrap;
+
+    .dv-decoration-10 {
+      position: absolute;
+      width: 95%;
+      left: 2.5%;
+      height: 5px;
+      bottom: 0px;
+    }
+
+    .digital-flop-item-school {
+      width: 32% !important;
+    }
+
+    .digital-flop-item {
+      width: 23%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border-left: 3px solid #061e5d;
+      border-right: 3px solid #061e5d;
+      cursor: pointer;
+    }
+
+    .digital-flop-title {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    .digital-flop {
+      display: flex;
+    }
+
+    .unit {
+      margin-left: 10px;
+      display: flex;
+      align-items: flex-end;
+      box-sizing: border-box;
+      padding-bottom: 13px;
+    }
   }
 
-  .digital-flop-title {
-    font-size: 18px;
-    margin-bottom: 20px;
+  .row-item {
+    height: 40px !important;
+    line-height: 40px !important;
   }
 
-  .digital-flop {
-    display: flex;
+  .Breadcrumb {
+    line-height: 40px;
+    height: 40px;
+
+    // span {
+    //   color: #fff !important;
+    // }
+
+    // .el-link.el-link--default {
+    //   color: #fff !important;
+    // }
   }
 
-  .unit {
-    margin-left: 10px;
-    display: flex;
-    align-items: flex-end;
-    box-sizing: border-box;
-    padding-bottom: 13px;
+  /* //小于等于1600px时，高度为100px，大于1600px时，高度为140px */
+  @media screen and (max-width: 1600px) {
+    #top-header {
+      .custom-select-tree {
+        width: 320px;
+      }
+
+      .el-input__inner,
+      .vue-treeselect__single-value {
+
+        font-size: 1.1111111111vw;
+      }
+
+      .center-subtitle {
+        left: 18%;
+        top: 44px;
+        font-size: 1.22222222vw;
+      }
+
+      .top-nav-right {
+        right: 20px;
+        top: 65px;
+      }
+    }
+
+    .block-right-content-main {
+      &-item {
+        height: 160px;
+      }
+    }
+
+    .el-select-dropdown__item {
+      font-size: 0.9111111vw;
+    }
+
+    .target-item-title {
+      width: 100px;
+      transition: all .35s ease-in-out;
+    }
   }
-}
 
-.row-item {
-  height: 40px !important;
-  line-height: 40px !important;
-}
-.Breadcrumb {
-  line-height: 40px;
-  height: 40px;
 
-  // span {
-  //   color: #fff !important;
+  @media screen and (min-width: 1601px) {
+    #top-header {
+      .custom-select-tree {
+        width: 460px;
+      }
+
+      .el-input__inner,
+      .vue-treeselect__single-value {
+        font-size: 1.0111111111vw;
+      }
+
+      .center-subtitle {
+        left: 16%;
+        top: 36px;
+        font-size: 1.22222222vw;
+      }
+
+      .top-nav-right {
+        right: 20px;
+        top: 60px;
+      }
+    }
+
+    .el-select-dropdown__item {
+      font-size: 0.611111118vw;
+    }
+  }
+
+  #target {
+    .target-item {
+      height: calc((100vh - 280px) / 2);
+    }
+  }
+
+  .block-right-content-main {
+    &-item {
+      height: calc((100vh - 280px) / 4)
+    }
+  }
+
+  // .block-right-content-main {
+  //   &-item {
+  //     height: calc((100vh - 26vh) / 4)
+  //   }
+  // }
+  // //屏幕高度大于899px时
+  // @media screen and (min-width: 900px) {
+  //   #target {
+  //     .target-item {
+  //       height: calc((100vh - 30vh) / 2);
+  //     }
+  //   }
+
+  //   .block-right-content-main {
+  //     &-item {
+  //       height: calc((100vh - 26vh) / 4)
+  //     }
+  //   }
   // }
 
-  // .el-link.el-link--default {
-  //   color: #fff !important;
+  // //屏幕高度大于1080px时
+  // @media screen and (min-width: 1079px) {
+  //   #target {
+  //     .target-item {
+  //       height: calc((100vh - 24vh) / 2);
+  //     }
+  //   }
+
+  //   .block-right-content-main {
+  //     &-item {
+  //       height: calc((100vh - 25vh) / 4)
+  //     }
+  //   }
   // }
-}
 
-/* //小于等于1600px时，高度为100px，大于1600px时，高度为140px */
-@media screen and (max-width: 1600px) {
-  #top-header {
-    .custom-select-tree {
-      width: 320px;
-    }
+  // //屏幕高度大于1439px时
+  // @media screen and (min-height: 1439px) {
+  //   #target {
+  //     .target-item {
+  //       height: calc((100vh - 21vh) / 2);
+  //     }
+  //   }
 
-    .el-input__inner,.vue-treeselect__single-value {
-
-      font-size: 1.1111111111vw;
-    }
-
-    .center-subtitle {
-      left: 18%;
-      top: 44px;
-      font-size: 1.22222222vw;
-    }
-
-    .top-nav-right {
-      right: 20px;
-      top: 65px;
-    }
-  }
-
-  .block-right-content-main {
-    &-item {
-      height: 160px;
-    }
-  }
-
-  .el-select-dropdown__item {
-    font-size: 0.9111111vw;
-  }
-
-  .target-item-title {
-    width: 100px;
-    transition: all .35s ease-in-out;
-  }
-
-  #target {
-    .target-item {
-      height: calc((100vh - 26vh) / 2);
-    }
-  }
-}
-
-
-@media screen and (min-width: 1601px) {
-  #top-header {
-    .custom-select-tree {
-      width: 460px;
-    }
-
-    .el-input__inner,
-    .vue-treeselect__single-value {
-      font-size: 1.1111111111vw;
-    }
-
-    .center-subtitle {
-      left: 16%;
-      top: 36px;
-      font-size: 1.22222222vw;
-    }
-
-    .top-nav-right {
-      right: 20px;
-      top: 60px;
-    }
-  }
-
-  .block-right-content-main {
-    &-item {
-      height: calc((100vh - 26vh) / 4)
-    }
-  }
-
-  .el-select-dropdown__item {
-    font-size: 0.611111118vw;
-  }
-
-  #target {
-    .target-item {
-      height: calc((100vh - 24vh) / 2);
-    }
-  }
-}
-
-//屏幕宽度大于1920px时
-@media screen and (min-width: 1921px) {
-  #target {
-    .target-item {
-      height: calc((100vh - 21vh) / 2);
-    }
-  }
-  .block-right-content-main {
-    &-item {
-      height: calc((100vh - 22vh) / 4)
-    }
-  }
-}
+  //   .block-right-content-main {
+  //     &-item {
+  //       height: calc((100vh - 22vh) / 4)
+  //     }
+  //   }
+  // }
 }
 
 

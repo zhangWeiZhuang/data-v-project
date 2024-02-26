@@ -1,6 +1,6 @@
 <template>
   <div id="digital-flop">
-    <div class="digital-flop-item" v-for="item in digitalFlopData" :key="item.title">
+    <div class="digital-flop-item" v-for="item in digitalFlopData" :key="item.title" @click="areaView()">
       <div class="digital-flop-title">{{ item.title }}</div>
       <div class="digital-flop">
         <dv-digital-flop :config="item.number" style="width:100px;height:50px;" />
@@ -12,14 +12,15 @@
 
     <el-dialog :destroy-on-close="true" :visible.sync="dialogVisible" width="60%" :append-to-body="true" @close="close">
       <div class="Breadcrumb">
-        <el-link type="primary" :underline="false" :disabled="!areaName" @click="backArea">区域</el-link>
+        <el-link type="primary" :underline="false" :disabled="!areaName || curOrgModel.orgLevel != 0"
+          @click="backArea">区域</el-link>
         <span v-if="areaName" style="padding:0px 6px;">/</span>
         <el-link :underline="false" type="info" disabled v-if="areaName">{{ areaName }}</el-link>
-        <el-link type="primary" v-if="areaName" style="margin-left:10px" :underline="false"
+        <el-link type="primary" v-if="areaName && curOrgModel.orgLevel == 0" style="margin-left:10px" :underline="false"
           @click="backArea">返回上一层级</el-link>
       </div>
-      <dv-scroll-board v-if="!areaName" :config="configScroll" @click="rowClick" style="height:400px;" />
-      <dv-scroll-board v-if="areaName" :config="configScrollChild" style="height:400px;" />
+      <dv-scroll-board v-if="!areaName && dialogVisible" :config="configScroll" @click="rowClick" style="height:400px;" />
+      <dv-scroll-board v-if="areaName && dialogVisible" :config="configScrollChild" style="height:400px;" />
     </el-dialog>
   </div>
 </template>
@@ -30,6 +31,7 @@ export default {
   props: {
     resultData: [],
     groupData: {},
+    curOrgModel: {},
   },
   data () {
     return {
@@ -76,6 +78,7 @@ export default {
   },
   methods: {
     close () {
+      this.configScroll.data = [];
       this.configScrollChild.data = [];
       this.areaName = ''
     },
@@ -101,15 +104,26 @@ export default {
     },
     //区域查看
     areaView () {
+      console.log(`curOrgModel`, this.curOrgModel)
       this.configScroll.data = [];
       this.configScrollChild.data = [];
-      //获取区域数据
-      const arealist = this.resultData.filter(item => item.orgLevel == 1)
+      this.areaName = ''
+      //最后一层不可查看
+      if (this.curOrgModel.orgLevel == 2)
+        return;
+      else if (this.curOrgModel.orgLevel == 1) {
+        this.areaName = this.curOrgModel.orgName
+        this.rowClick({ row: [0, this.curOrgModel.orgName] })
+      }
+      else {
+        //获取区域数据
+        const arealist = this.resultData.filter(item => item.parentOrgCode == this.curOrgModel.orgCode)
 
-      //循环添加区域数据
-      arealist.forEach(item => {
-        this.configScroll.data.push([`${(item.teacherStudentRatio * 100).toFixed(2)}%`, item.orgName, item.schoolNum, item.teacherNum, item.studentNum])
-      })
+        //循环添加区域数据
+        arealist.forEach(item => {
+          this.configScroll.data.push([`${(item.teacherStudentRatio * 100).toFixed(2)}%`, item.orgName, item.schoolNum, item.teacherNum, item.studentNum])
+        })
+      }
 
       this.dialogVisible = true;
     },
@@ -182,4 +196,8 @@ export default {
 </script>
 
 <style scoped lang="less">
+:deep(.el-dialog) {
+  background: #282c34 !important;
+  // background: url(http://192.168.2.129:8080/img/bg.3e094696.png) !important;
+}
 </style>

@@ -33,7 +33,7 @@
         <div class="main-content">
           <div class="block-left-content">
             <!-- <dv-border-box-1 :reverse="true"> -->
-            <digital-flop :resultData="resultData" :groupData="basicModel" />
+            <digital-flop :resultData="resultData" :groupData="basicModel" :curOrgModel="curOrgModel" />
             <!-- </dv-border-box-1> -->
             <dv-border-box-8 :reverse="true" style="margin-top:10px;box-sizing: content-box;">
               <div id="target" style="padding:10px">
@@ -236,6 +236,7 @@ export default {
     setInterval(() => {
       this.dayInfo.time = dayjs().format("HH:mm:ss");
     }, 1000)
+
 
     if (!sessionStorage.getItem("dayInfo"))
       sessionStorage.setItem("dayInfo", JSON.stringify(this.dayInfo))

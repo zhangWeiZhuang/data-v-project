@@ -214,7 +214,7 @@ export default {
         //根据名词模糊匹配
         const area = _that._props.orgData.find(item => item.orgName.includes(name))
         if (area)
-          _that.$emit('mapClick', { orgCode: area.orgCode, orgLevel: area.orgLevel })
+          _that.$emit('mapClick', { orgCode: area.orgCode, orgLevel: area.orgLevel, orgName: area.orgName })
       })
       charts.setOption(option);
 
